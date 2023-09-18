@@ -1,2 +1,0 @@
-/usr/bin/ar qc libhash-library-sha1.a CMakeFiles/hash-library-sha1.dir/hash-library/sha1.cpp.o
-/usr/bin/ranlib libhash-library-sha1.a
