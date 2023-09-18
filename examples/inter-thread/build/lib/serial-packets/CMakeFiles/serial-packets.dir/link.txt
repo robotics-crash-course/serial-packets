@@ -1,0 +1,2 @@
+/usr/bin/ar qc libserial-packets.a CMakeFiles/serial-packets.dir/packet.c++.o CMakeFiles/serial-packets.dir/messages.c++.o
+/usr/bin/ranlib libserial-packets.a
