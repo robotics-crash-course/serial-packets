@@ -1,5 +1,5 @@
 # serial-packets
-- A simple serialization library used for rcc  
+- A serialization tool used for rcc  
 
 ## Copyright & Licensing
 
