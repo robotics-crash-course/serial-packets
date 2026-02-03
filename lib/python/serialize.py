@@ -14,11 +14,11 @@ class Char:
 class Int32:
 	@staticmethod
 	def insert(i):
-		return i.to_bytes(4, byteorder='big')
+		return i.to_bytes(4, byteorder='big', signed=True)
 
 	@staticmethod
 	def extract(b):
-		return int.from_bytes(b[:4], byteorder='big'), b[4:]
+		return int.from_bytes(b[:4], byteorder='big', signed=True), b[4:]
 
 class Float:
 	@staticmethod
