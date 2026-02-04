@@ -1,11 +1,11 @@
-from comms.serialize import *
+from serialize import *
 import base64
 import hashlib
 
-start_tx =   b'\x01' # SOH (start of heading)
-start_data = b'\x02' # STX (start of text)
-end_data =   b'\x03' # ETX (end of text)
-end_tx =     b'\x04' # EOT (end of transmission)
+start_tx =   b'#' # SOH (start of heading)
+start_data = b'$' # STX (start of text)
+end_data =   b'%' # ETX (end of text)
+end_tx =     b'&' # EOT (end of transmission)
 
 class Packet:
 	def __init__(self, p_id = None, data = None):

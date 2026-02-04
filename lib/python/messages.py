@@ -1,5 +1,5 @@
-from comms.packet import *
-from comms.serialize import *
+from packet import *
+from serialize import *
 
 class Test_Outbound:
 	def __init__(self, field_1, field_2):

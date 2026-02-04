@@ -8,7 +8,8 @@ import serial
 import time
 import traceback
 import socket
-from comms.messages import *
+from messages import *
+from comms.packet import Packet
 
 class CommsController():
 	def __init__(self, port, baudrate=115200, timeout=10):
@@ -48,7 +49,7 @@ class CommsController():
 		while True:
 			try:
 				if self.ser.inWaiting() > 0:
-					p = packet.Packet.read_from(self.ser)
+					p = Packet.read_from(self.ser)
 					self.inbound.put(p)
 			except:
 				print('exception in inbound loop:')
