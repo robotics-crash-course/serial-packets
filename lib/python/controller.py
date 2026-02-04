@@ -9,7 +9,7 @@ import time
 import traceback
 import socket
 from messages import *
-from comms.packet import Packet
+from packet import Packet
 
 class CommsController():
 	def __init__(self, port, baudrate=115200, timeout=10):

@@ -1,131 +1,109 @@
-from packet import *
+# /**
+#  * Copyright (c) 2023  Catherine Van West <catherine.vanwest@cooper.edu>
+#  * SPDX-License-Identifier: GPL-3.0-or-later
+#  */
+
+from packet import Packet
 from serialize import *
 
-class Test_Outbound:
-	def __init__(self, field_1, field_2):
-		self.field_1 = field_1
-		self.field_2 = field_2
+class Message:
+    def __init__(self, data):
+        self.data_ = data
 
-	def pack(self):
-		return Packet(377, serialize(
-			(Float, Float),
-			[self.field_1, self.field_2]
-		))
+    @staticmethod
+    def id():
+        return 0
+    
+    def pack(self):
+        return Packet(0, serialize((Int32,), [self.data_]))
 
-	def __repr__(self):
-		return f'Test_Outbound<{self.field_1}, {self.field_2}>'
+    def __repr__(self):
+        return f'Message(id={self.id()}, data={deserialize((Int32,), self.data_)[0]})'
 
-class Test_Inbound:
-	
-	def __init__(self, p):
-		[
-			self.field_1, self.field_2, self.field_3
-		], _ = deserialize(
-			(Float, Float, Float),
-			p.data()
-		)
-	@staticmethod
-	def id():
-		return 377
-	def __repr__(self):
-		return f'Test_Inbound<{self.field_1}, {self.field_2}, {self.field_3}>'
-	
-class SwitchToConsole:
-	def __init__(self):
-		self.id_ = 0
+class Initialized(Message):
+    def __init__(self, data):
+        self.data_ = data
+    
+    @staticmethod
+    def id():
+        return 10
+    
+    def pack(self):
+             return Packet(10, serialize((Int32, ), [self.data_]))
 
-	def pack(self):
-		return Packet(self.id_, b' ')
+class MoveBy(Message):
+    def __init__(self, data):
+        self.data_ = data
+    
+    @staticmethod
+    def id():
+        return 7
 
-class SimpleMove:
-	def __init__(self, msg):
-		self.id_ = 66
+    def pack(self):
+        return Packet(7, serialize((Int32,), [self.data_]))
+    
+class Position(Message):
+    def __init__(self, data: int=0):
+        self.data_ = data
+    
+    @staticmethod
+    def id():
+        return 9
 
-		self.packet_spec = (
-			Float, # distance
-			Float, # curvature
-			Float, # velocity
-		)
+    def pack(self):
+        return Packet(9, serialize((Int32,), [self.data_]))
 
-		if type(msg) is tuple:
-			self.fields = [
-				msg[0],
-				msg[1],
-				msg[2]
-			]
-		else:
-			self.fields = [
-				msg.distance,
-				msg.curvature,
-				msg.velocity,
-			]
+class IncomingMessageLengthError(Message):
+    def __init__(self, data):
+        self.data_ = data
+    
+    @staticmethod
+    def id():
+        return 1
+    
+    def pack(self):
+        return Packet(1, serialize((Int32,), [self.data_]))
 
-	def pack(self):
-		return Packet(self.id_, serialize(
-			self.packet_spec,
-			self.fields
-		))
+class EStop(Message):
+    def __init__(self, data):
+        self.data_ = data
+    
+    @staticmethod
+    def id():
+        return 4
+    
+    def pack(self):
+        return Packet(4, serialize((Int32,), [self.data_]))
 
-class MoveFeedback:
-	def __init__(self, p):
-		self.id_ = MoveFeedback.id()
+class MotorEnable(Message):
+    def __init__(self, data):
+        self.data_ = data
+    
+    @staticmethod
+    def id():
+        return 5
+    
+    def pack(self):
+        return Packet(5, serialize((Int32,), [self.data_]))
+    
+class Ack(Message):
+    def __init__(self, data):
+        self.data_ = data
+    
+    @staticmethod
+    def id():
+        return 2
+    
+    def pack(self):
+        return Packet(2, serialize((Int32,), [self.data_]))
 
-		self.packet_spec = (
-			Float, # distance
-			Float, # curvature
-			Float, # velocity
-		)
-
-		[
-			self.distance, self.curvature, self.velocity
-		], _ = deserialize(
-			self.packet_spec,
-			p.data()
-		)
-
-	@classmethod
-	def id(cls):
-		return 42
-
-	def __repr__(self):
-		return f'MoveFeedback<{self.distance}, {self.curvature}, {self.velocity}>'
-
-class Stop:
-	def __init__(self):
-		self.id_ = 666
-		
-	def pack(self):
-		return Packet(self.id_, b' ')
-
-class Twist:
-	def __init__(self, msg):
-		self.id_ = 88
-		self.packet_spec = (Float, Float)
-
-		if type(msg) is Packet:
-			self.from_pack(msg)
-			return None
-		if type(msg) is tuple:
-			[self.linear, self.angular] = [msg[0], msg[1]]
-		else:
-			[self.linear, self.angular] = [msg.linear,msg.angular]
-		self.fields = [self.linear, self.angular]
-
-	def pack(self):
-		return Packet(self.id_,serialize(self.packet_spec, self.fields))
-	
-	@staticmethod
-	def id():
-		return 88
-	
-	def from_pack(self,p):
-		[
-			self.linear, self.angular
-		], _ = deserialize(
-			(Float, Float),
-			p.data()
-		)
-		self.fields = [self.linear,self.angular]
-		
-	def __repr__(self):
-		return f'Twist<{self.linear}, {self.angular}>'
+class MotionComplete(Message):
+    def __init__(self, data):
+        self.data_ = data
+    
+    @staticmethod
+    def id():
+        return 3
+    
+    def pack(self):
+        return Packet(3, serialize((Int32,), [self.data_]))
