@@ -16,9 +16,16 @@ class Message:
     
     def pack(self):
         return Packet(0, serialize((Int32,), [self.data_]))
+    
+    @classmethod
+    def from_pack(cls, p: Packet):
+        data, _ = deserialize((Int32,), p.data_)
+        cls.data = data[0]
+        return cls
+        
 
     def __repr__(self):
-        return f'Message(id={self.id()}, data={deserialize((Int32,), self.data_)[0]})'
+        return f'Message(id={self.id()}, data={deserialize((Int32,), self.data_)})'
 
 class Initialized(Message):
     def __init__(self, data):
