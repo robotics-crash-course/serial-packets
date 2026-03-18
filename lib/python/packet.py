@@ -8,6 +8,7 @@ from serialize import *
 import struct
 import base64
 import hashlib
+import traceback
 
 # start_tx =   b'\x01' # SOH (start of heading)
 # start_data = b'\x02' # STX (start of text)
@@ -68,21 +69,25 @@ class Packet:
 	# 	return p
 	
 	def from_bytes(cls, b):
-		if b[0] == start_tx:
-			b = b[1:]
-		b = b[:b.find(end_tx)]
-		b64_id, remainder = b.split(start_data, 1)
-		b64_data, cksum = remainder.split(end_data, 1)
-		if cksum[-1:] == end_tx:
-			cksum = cksum[:-1]
+		try:
+			if b.find(start_tx) == 0:
+				b = b[1:]
+			b = b[:b.find(end_tx)]
+			b64_id, remainder = b.split(start_data, 1)
+			b64_data, cksum = remainder.split(end_data, 1)
+			if cksum[-1:] == end_tx:
+				cksum = cksum[:-1]
 
-		p_id, _ = deserialize((Int32, ), base64.b64decode(b64_id))
-		p = cls(p_id[0], base64.b64decode(b64_data))
+			p_id, _ = deserialize((Int32, ), base64.b64decode(b64_id))
+			p = cls(p_id[0], base64.b64decode(b64_data))
 
-		# if not p.checksum(cksum):
-		# 	raise Exception('checksum failed!')
+			# if not p.checksum(cksum):
+			# 	raise Exception('checksum failed!')
 
-		return p
+			return p
+		except Exception as e:
+			traceback.print_exc()
+			return Packet()
 
 	def write_to(self, ser):
 		ser.write(self.to_bytes())
@@ -110,6 +115,28 @@ class Packet:
 				return cls.from_bytes(ser.read_until(expected=end_tx))
 			except:
 				pass
+
+	@classmethod
+	def read_and_remove_from_buffer(cls, buf):
+		try:
+			packet_list = []
+			ret_buf = b''
+			start_tx_index = buf.find(start_tx)
+			buf = buf[start_tx_index:]
+			pbytes, ret_buf = buf.split(end_tx, 1)
+			pbytes = pbytes + end_tx
+			packet_list.append(Packet.from_bytes(pbytes))
+			return packet_list, ret_buf
+		except Exception as e:
+			return packet_list, buf
+	"""
+	Find first start_tx
+	find end_tx, if no end_tx, return
+	if start and end, pull out msg (including start and end bits)
+	p = cls.from_bytes, append to output list,
+	repeat
+	return list of found packets in buffer
+	"""
 
 	def __repr__(self):
 		return f'Packet<id_={self.id_}, data_={self.data_} ; Checksum Not Implemented!>'
