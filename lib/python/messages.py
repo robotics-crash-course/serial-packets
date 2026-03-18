@@ -38,6 +38,17 @@ class Initialized(Message):
     def pack(self):
              return Packet(10, serialize((Int32, ), [self.data_]))
 
+class SetZero(Message):
+    def __init__(self, data):
+        self.data_ = data
+    
+    @staticmethod
+    def id():
+        return 11
+    
+    def pack(self):
+             return Packet(11, serialize((Int32, ), [self.data_]))
+
 class MoveBy(Message):
     def __init__(self, data):
         self.data_ = data

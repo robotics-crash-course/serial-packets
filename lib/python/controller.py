@@ -64,13 +64,13 @@ class CommsController(QObject):
 					# self.inbound.put(p)
 					incoming = self.ser.read(self.ser.inWaiting())
 					self.read_buffer += incoming
-					print(f"READ BUFFER: {self.read_buffer}")
+					# print(f"READ BUFFER: {self.read_buffer}")
 					# p = Packet.from_bytes(self.read_buffer)
 				# print(f"read buffer handle inbound: {self.read_buffer}")
 				if(self.read_buffer != b''):
 					packet_list, ret_buffer = Packet.read_and_remove_from_buffer(self.read_buffer)
 					self.read_buffer = ret_buffer
-					print(f"RETURN BUFFER: {self.read_buffer}")
+					# print(f"RETURN BUFFER: {self.read_buffer}")
 					# print(f"packetlist: {packet_list}")
 					for p in packet_list: self.inbound.put(p)
 					# print(f"INBOUND QUEUE: {self.inbound.qsize()}")
